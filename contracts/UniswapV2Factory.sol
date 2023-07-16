@@ -20,6 +20,11 @@ contract UniswapV2Factory is IUniswapV2Factory {
         return allPairs.length;
     }
 
+    function createMultiplePairs(address[] calldata tokens) external returns (address[] memory pairs) {
+        require(!hasDuplicateTokens(tokens), 'UniswapV2: IDENTICAL_ADDRESSES');
+        // function body
+    }
+
     function createPair(address tokenA, address tokenB) external returns (address pair) {
         require(tokenA != tokenB, 'UniswapV2: IDENTICAL_ADDRESSES');
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
@@ -45,5 +50,16 @@ contract UniswapV2Factory is IUniswapV2Factory {
     function setFeeToSetter(address _feeToSetter) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         feeToSetter = _feeToSetter;
+    }
+
+    function hasDuplicateTokens(address[] memory tokens) private pure returns (bool) {
+        for (uint i = 0; i < tokens.length; i++) {
+            for (uint j = i + 1; j < tokens.length; j++) {
+                if (tokens[i] == tokens[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
