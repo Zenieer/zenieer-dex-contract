@@ -22,6 +22,10 @@ contract UniswapV2Factory is IUniswapV2Factory {
 
     function createMultiplePairs(address[] calldata tokens) external returns (address[] memory pairs) {
         require(!hasDuplicateTokens(tokens), 'UniswapV2: IDENTICAL_ADDRESSES');
+
+        address[] memory sortedTokens;
+        sortedTokens = sortTokens(tokens);
+        
         // function body
     }
 
@@ -61,5 +65,20 @@ contract UniswapV2Factory is IUniswapV2Factory {
             }
         }
         return false;
+    }
+
+    function sortTokens(address[] memory tokens) private pure returns (address[] memory) {
+        uint256 n = tokens.length;
+        for (uint256 i = 0; i < n - 1; i++) {
+            for (uint256 j = 0; j < n - i - 1; j++) {
+                if (tokens[j] > tokens[j + 1]) {
+                    address temp = tokens[j];
+                    tokens[j] = tokens[j + 1];
+                    tokens[j + 1] = temp;
+                }
+            }
+        }
+        
+        return tokens;
     }
 }
