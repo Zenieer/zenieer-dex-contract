@@ -20,6 +20,15 @@ contract UniswapV2Factory is IUniswapV2Factory {
         return allPairs.length;
     }
 
+    function createMultiplePairs(address[] calldata tokens) external returns (address[] memory pairs) {
+        require(!hasDuplicateTokens(tokens), 'UniswapV2: IDENTICAL_ADDRESSES');
+
+        address[] memory sortedTokens;
+        sortedTokens = sortTokens(tokens);
+        
+        // function body
+    }
+
     function createPair(address tokenA, address tokenB) external returns (address pair) {
         require(tokenA != tokenB, 'UniswapV2: IDENTICAL_ADDRESSES');
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
@@ -45,5 +54,31 @@ contract UniswapV2Factory is IUniswapV2Factory {
     function setFeeToSetter(address _feeToSetter) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         feeToSetter = _feeToSetter;
+    }
+
+    function hasDuplicateTokens(address[] memory tokens) private pure returns (bool) {
+        for (uint i = 0; i < tokens.length; i++) {
+            for (uint j = i + 1; j < tokens.length; j++) {
+                if (tokens[i] == tokens[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function sortTokens(address[] memory tokens) private pure returns (address[] memory) {
+        uint256 n = tokens.length;
+        for (uint256 i = 0; i < n - 1; i++) {
+            for (uint256 j = 0; j < n - i - 1; j++) {
+                if (tokens[j] > tokens[j + 1]) {
+                    address temp = tokens[j];
+                    tokens[j] = tokens[j + 1];
+                    tokens[j + 1] = temp;
+                }
+            }
+        }
+        
+        return tokens;
     }
 }
